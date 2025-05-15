@@ -115,6 +115,10 @@ public class MainPage extends javax.swing.JFrame {
     updatePlaylistModel();
 }
     
+    private void iniciarBarraProgreso(Song song) {
+    iniciarBarraProgreso(song, 0);
+}
+    
     //Función para agregar al inicio actual de la cola de reproducción
     public void playSongImmediately(Song newSong) {
     if (playlistSongs.isEmpty()) {
@@ -131,14 +135,20 @@ public class MainPage extends javax.swing.JFrame {
     updatePlaylistModel();
 
     // 🔊 Reproducir la canción agregada inmediatamente
-    musicPlayer.setPlaylist(playlistSongs);
-    musicPlayer.setCurrentTrackIndex(currentPlaylistIndex);
-    musicPlayer.play();
+musicPlayer.setPlaylist(playlistSongs);
+musicPlayer.setCurrentTrackIndex(currentPlaylistIndex);
+
+// Verifica si el reproductor estaba en pausa
+if (musicPlayer.getState() == MusicPlayer.PlayerState.PAUSED) {
+    musicPlayer.resume(); // ✅ Reanuda desde donde se pausó
+} else {
+    musicPlayer.play(); // 🔁 Reproduce normalmente si no estaba pausado
     Song current = musicPlayer.getCurrentSong();
-        if (current != null) {
-            iniciarBarraProgreso(current);
-        }
+    if (current != null) {
+        iniciarBarraProgreso(current); // ⏳ Solo reinicia barra si es una nueva reproducción
+    }
 }
+    }
     
     //Función para actualizar la información de la canción que se esta reproduciendo 
     private void updateSongInfo(Song selectedSong) {
@@ -358,11 +368,17 @@ private void mostrarPlaylistSeleccionada(PlaylistVisual visual) {
             // Reproducir la canción seleccionada
             musicPlayer.setPlaylist(playlistSongs);
             musicPlayer.setCurrentTrackIndex(currentPlaylistIndex);
-            musicPlayer.play();
-            Song current = musicPlayer.getCurrentSong();
-                if (current != null) {
-                    iniciarBarraProgreso(current);
-                }
+            // Verifica si el reproductor estaba en pausa
+// Verifica si el reproductor estaba en pausa
+if (musicPlayer.getState() == MusicPlayer.PlayerState.PAUSED) {
+    musicPlayer.resume(); // ✅ Reanuda desde donde se pausó
+} else {
+    musicPlayer.play(); // 🔁 Reproduce normalmente si no estaba pausado
+    Song current = musicPlayer.getCurrentSong();
+    if (current != null) {
+        iniciarBarraProgreso(current); // ⏳ Solo reinicia barra si es una nueva reproducción
+    }
+}
 
             // Actualizar visualización y estado
             actualizarEstadoMeGusta();
@@ -653,22 +669,31 @@ public void playFromMainPage(List<Song> playlistSongs, int currentPlaylistIndex)
 
     musicPlayer.setPlaylist(playlistSongs); // <-- ESTE ES CLAVE
     musicPlayer.setCurrentTrackIndex(currentPlaylistIndex);
-    musicPlayer.play();
+// Verifica si el reproductor estaba en pausa
+if (musicPlayer.getState() == MusicPlayer.PlayerState.PAUSED) {
+    musicPlayer.resume(); // ✅ Reanuda desde donde se pausó
+} else {
+    musicPlayer.play(); // 🔁 Reproduce normalmente si no estaba pausado
     Song current = musicPlayer.getCurrentSong();
-        if (current != null) {
-            iniciarBarraProgreso(current);
-        }
+    if (current != null) {
+        iniciarBarraProgreso(current); // ⏳ Solo reinicia barra si es una nueva reproducción
+    }
+}
 }
 
 
-    private void iniciarBarraProgreso(Song song) {
+private void iniciarBarraProgreso(Song song, long tiempoInicial) {
     BarRepro.setMaximum((int) song.getDuration());
     TotalTime.setText(song.getFormattedDuration());
-    tiempoTranscurrido = 0;
+
+    tiempoTranscurrido = tiempoInicial;
 
     if (progresoTimer != null) {
         progresoTimer.stop();
     }
+
+    BarRepro.setValue((int) tiempoTranscurrido);
+    ElapsedTime.setText(formatearTiempo(tiempoTranscurrido));
 
     progresoTimer = new Timer(1000, e -> {
         if (musicPlayer.isPlaying()) {
@@ -878,11 +903,16 @@ SongsList.addListSelectionListener(e -> {
             // Reproducir la canción seleccionada
             musicPlayer.setPlaylist(playlistSongs);
             musicPlayer.setCurrentTrackIndex(currentPlaylistIndex);
-            musicPlayer.play();
-            Song current = musicPlayer.getCurrentSong();
-                if (current != null) {
-                    iniciarBarraProgreso(current);
-                }
+// Verifica si el reproductor estaba en pausa
+if (musicPlayer.getState() == MusicPlayer.PlayerState.PAUSED) {
+    musicPlayer.resume(); // ✅ Reanuda desde donde se pausó
+} else {
+    musicPlayer.play(); // 🔁 Reproduce normalmente si no estaba pausado
+    Song current = musicPlayer.getCurrentSong();
+    if (current != null) {
+        iniciarBarraProgreso(current); // ⏳ Solo reinicia barra si es una nueva reproducción
+    }
+}
 
             // Actualizar visualización y estado
             actualizarEstadoMeGusta();
@@ -2637,22 +2667,32 @@ SongsList.addListSelectionListener(e -> {
         PlayBt.setText(EmojiParser.parseToUnicode(":arrow_forward:")); // ▶️
     } else if (musicPlayer.isPaused()) {
         // Reanudar desde PAUSED
-        musicPlayer.play(); 
-        Song current = musicPlayer.getCurrentSong();
-        if (current != null) {
-            iniciarBarraProgreso(current);
-        }
+// Verifica si el reproductor estaba en pausa
+if (musicPlayer.getState() == MusicPlayer.PlayerState.PAUSED) {
+    musicPlayer.resume(); // ✅ Reanuda desde donde se pausó
+} else {
+    musicPlayer.play(); // 🔁 Reproduce normalmente si no estaba pausado
+    Song current = musicPlayer.getCurrentSong();
+    if (current != null) {
+        iniciarBarraProgreso(current); // ⏳ Solo reinicia barra si es una nueva reproducción
+    }
+}
         PlayBt.setText(EmojiParser.parseToUnicode(":double_vertical_bar:")); // ⏸️
     } else {
         // Reproducción nueva
         if (!playlistSongs.isEmpty() && currentPlaylistIndex >= 0 && currentPlaylistIndex < playlistSongs.size()) {
             musicPlayer.setPlaylist(playlistSongs); // Aseguramos que tenga la lista actual
             musicPlayer.setCurrentTrackIndex(currentPlaylistIndex);
-            musicPlayer.play();
-            Song current = musicPlayer.getCurrentSong();
-                if (current != null) {
-                    iniciarBarraProgreso(current);
-                   }
+            // Verifica si el reproductor estaba en pausa
+if (musicPlayer.getState() == MusicPlayer.PlayerState.PAUSED) {
+    musicPlayer.play(); // Reanuda desde donde se pausó (ya lo implementaste en la clase)
+} else {
+    musicPlayer.play(); // Reproduce normalmente si no estaba pausado
+    Song current = musicPlayer.getCurrentSong();
+    if (current != null) {
+        iniciarBarraProgreso(current); // Solo reinicia barra si es una nueva reproducción
+    }
+}
             PlayBt.setText(EmojiParser.parseToUnicode(":double_vertical_bar:")); // ⏸️
         } else {
             JOptionPane.showMessageDialog(this, "⚠ No hay canciones en la cola de reproducción.", "Error", JOptionPane.WARNING_MESSAGE);
@@ -2703,11 +2743,16 @@ SongsList.addListSelectionListener(e -> {
     updateSongInfo(currentSong);
     musicPlayer.setPlaylist(playlistSongs);
     musicPlayer.setCurrentTrackIndex(currentPlaylistIndex);
-    musicPlayer.play(); // 🔊 fuerza a reproducir desde inicio
+// Verifica si el reproductor estaba en pausa
+if (musicPlayer.getState() == MusicPlayer.PlayerState.PAUSED) {
+    musicPlayer.resume(); // ✅ Reanuda desde donde se pausó
+} else {
+    musicPlayer.play(); // 🔁 Reproduce normalmente si no estaba pausado
     Song current = musicPlayer.getCurrentSong();
-        if (current != null) {
-            iniciarBarraProgreso(current);
-        }
+    if (current != null) {
+        iniciarBarraProgreso(current); // ⏳ Solo reinicia barra si es una nueva reproducción
+    }
+}
     PlayBt.setText(EmojiParser.parseToUnicode(":double_vertical_bar:")); // ⏸️
     PlayBt.setFont(new Font("Segoe UI Emoji", Font.PLAIN, 30));
 
@@ -2773,11 +2818,16 @@ SongsList.addListSelectionListener(e -> {
     updateSongInfo(currentSong);
     musicPlayer.setPlaylist(playlistSongs);
     musicPlayer.setCurrentTrackIndex(currentPlaylistIndex);
-    musicPlayer.play(); // 🔊 fuerza a reproducir desde inicio
+// Verifica si el reproductor estaba en pausa
+if (musicPlayer.getState() == MusicPlayer.PlayerState.PAUSED) {
+    musicPlayer.resume(); // ✅ Reanuda desde donde se pausó
+} else {
+    musicPlayer.play(); // 🔁 Reproduce normalmente si no estaba pausado
     Song current = musicPlayer.getCurrentSong();
-        if (current != null) {
-            iniciarBarraProgreso(current);
-        }
+    if (current != null) {
+        iniciarBarraProgreso(current); // ⏳ Solo reinicia barra si es una nueva reproducción
+    }
+}
     PlayBt.setText(EmojiParser.parseToUnicode(":double_vertical_bar:")); // ⏸️
     PlayBt.setFont(new Font("Segoe UI Emoji", Font.PLAIN, 30));
 

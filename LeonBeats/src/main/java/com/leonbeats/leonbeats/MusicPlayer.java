@@ -1,12 +1,13 @@
 package com.leonbeats.leonbeats;
 
 import javazoom.jl.player.advanced.AdvancedPlayer;
-import javazoom.jl.player.advanced.PlaybackEvent;
-import javazoom.jl.player.advanced.PlaybackListener;
+import javazoom.jl.decoder.Bitstream;
+import javazoom.jl.decoder.Header;
 
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
+import javax.swing.Timer;
 
 public class MusicPlayer {
     private AdvancedPlayer player;
@@ -15,10 +16,15 @@ public class MusicPlayer {
     private int currentTrackIndex;
     private String musicFolderPath = "C:\\Users\\Luis Alfonso\\Music\\LeonBeats";
     private int pausedFrame = 0;
+    private int totalFrames = 0;
+    private final int framesPerSecond = 38;
+    private Timer progresoTimer;
+    private int tiempoTranscurrido = 0;
 
     public enum PlayerState {
         PLAYING, PAUSED, STOPPED
     }
+
     private PlayerState state = PlayerState.STOPPED;
 
     public MusicPlayer() {
@@ -42,37 +48,78 @@ public class MusicPlayer {
     }
 
     public void play() {
-    if (playlist.isEmpty()) {
-        System.out.println("No hay canciones en la playlist.");
-        return;
+        if (playlist.isEmpty()) {
+            System.out.println("No hay canciones en la playlist.");
+            return;
+        }
+
+        if (state == PlayerState.PAUSED && pausedFrame > 0) {
+            resume();
+            return;
+        }
+
+        stop(); // detener cualquier reproducción previa
+        state = PlayerState.PLAYING;
+
+        try {
+            Song currentSong = playlist.get(currentTrackIndex);
+            InputStream input = new BufferedInputStream(new FileInputStream(currentSong.getFile()));
+            player = new AdvancedPlayer(input);
+
+            totalFrames = (int) ((currentSong.getDuration() / 1000.0) * framesPerSecond);
+            pausedFrame = 0;
+            tiempoTranscurrido = 0;
+
+            new Thread(() -> {
+                try {
+                    isPlaying = true;
+                    player.play();
+                    isPlaying = false;
+                    state = PlayerState.STOPPED;
+                    if (progresoTimer != null) {
+                        progresoTimer.stop();
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }).start();
+
+            progresoTimer = new Timer(1000, e -> tiempoTranscurrido += 1000);
+            progresoTimer.start();
+
+            displayCurrentTrackInfo();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
-    stop(); // 💡 Siempre paramos para evitar conflictos, incluso si estaba PAUSED
-
-    state = PlayerState.PLAYING;
-
+    public void resume() {
     try {
         Song currentSong = playlist.get(currentTrackIndex);
-        InputStream input = new BufferedInputStream(new FileInputStream(currentSong.getFile()));
-        player = new AdvancedPlayer(input);
 
-        player.setPlayBackListener(new PlaybackListener() {
-            @Override
-            public void playbackFinished(PlaybackEvent evt) {
-                isPlaying = false;
-                state = PlayerState.STOPPED;
-                playNext();
-            }
-        });
+        System.out.println("▶ Reanudando desde frame: " + pausedFrame); // ✅ Aquí
+
+        player = crearPlayerDesdeFrame(currentSong.getFile(), pausedFrame);
+
+        state = PlayerState.PLAYING;
 
         new Thread(() -> {
             try {
                 isPlaying = true;
                 player.play();
+                isPlaying = false;
+                state = PlayerState.STOPPED;
+                if (progresoTimer != null) {
+                    progresoTimer.stop();
+                }
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }).start();
+
+        progresoTimer = new Timer(1000, e -> tiempoTranscurrido += 1000);
+        progresoTimer.start();
 
         displayCurrentTrackInfo();
 
@@ -81,13 +128,40 @@ public class MusicPlayer {
     }
 }
 
+    private AdvancedPlayer crearPlayerDesdeFrame(File mp3File, int startFrame) throws Exception {
+    FileInputStream fileInputStream = new FileInputStream(mp3File);
+    BufferedInputStream bufferedInput = new BufferedInputStream(fileInputStream);
+    
+    Bitstream bitstream = new Bitstream(bufferedInput);
+    int frameCount = 0;
+    Header header;
+
+    // 🔧 CAMBIO: Leer y descartar frames hasta llegar a startFrame
+    while (frameCount < startFrame && (header = bitstream.readFrame()) != null) {
+        bitstream.closeFrame();
+        frameCount++;
+    }
+
+    // 🔧 CAMBIO: No cerrar el bitstream, sino seguir usando el mismo input stream
+    return new AdvancedPlayer(bufferedInput); // Reproducirá desde el frame actual
+}
+
     public void pause() {
         if (state == PlayerState.PLAYING) {
             state = PlayerState.PAUSED;
+
+            if (progresoTimer != null) {
+                progresoTimer.stop();
+            }
+
+            pausedFrame = calcularFrameActual();
+            System.out.println("Canción pausada en frame: " + pausedFrame);
+
             if (player != null) {
                 player.close();
-                isPlaying = false;
             }
+
+            isPlaying = false;
         }
     }
 
@@ -95,7 +169,13 @@ public class MusicPlayer {
         state = PlayerState.STOPPED;
         if (player != null) {
             player.close();
-            isPlaying = false;
+        }
+        isPlaying = false;
+        pausedFrame = 0;
+        tiempoTranscurrido = 0;
+
+        if (progresoTimer != null) {
+            progresoTimer.stop();
         }
     }
 
@@ -113,6 +193,11 @@ public class MusicPlayer {
         }
     }
 
+    private int calcularFrameActual() {
+        int frame = (int) ((tiempoTranscurrido / 1000.0) * framesPerSecond);
+        return Math.min(frame, totalFrames);
+    }
+
     private void displayCurrentTrackInfo() {
         if (playlist.isEmpty()) return;
 
@@ -125,6 +210,8 @@ public class MusicPlayer {
         System.out.println("Archivo: " + currentSong.getFile().getName());
         System.out.println("=====================");
     }
+
+    // Getters y Setters
 
     public Song getCurrentSong() {
         if (playlist.isEmpty()) return null;
@@ -156,7 +243,7 @@ public class MusicPlayer {
     public PlayerState getState() {
         return state;
     }
-    
+
     public void setPlaylist(List<Song> playlistSongs) {
         this.playlist = playlistSongs;
     }
@@ -165,5 +252,21 @@ public class MusicPlayer {
         this.musicFolderPath = path;
         playlist.clear();
         loadMusicFiles();
+    }
+
+    public void setTiempoTranscurrido(int tiempo) {
+        this.tiempoTranscurrido = tiempo;
+    }
+
+    public int getTiempoTranscurrido() {
+        return tiempoTranscurrido;
+    }
+
+    public long getPausedFrameTime() {
+        Song current = getCurrentSong();
+        if (current != null && totalFrames > 0) {
+            return (long) ((pausedFrame / (double) totalFrames) * current.getDuration());
+        }
+        return 0;
     }
 }
