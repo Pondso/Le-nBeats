@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 123,abc,Admin,C:\Users\Luis Alfonso\OneDrive\Imágenes\Caratulas albums\loom.jpg,true
 223992973,ajl17xj03k,Poncho17,C:\Users\Luis Alfonso\OneDrive\Imágenes\Caratulas albums\foto perfil.jpg,false
 223992892,tumama,La mera punta del tren,C:\Users\Luis Alfonso\OneDrive\Imágenes\Caratulas albums\Lamine Yamal.jpg,false
@@ -11,3 +12,18 @@
 741,qwe,admin,,true
 258,258,,C:\Users\Luis Alfonso\OneDrive\Imágenes\Caratulas albums\foto perfil.jpg,false
 369,369,ADMIN,C:\Users\Luis Alfonso\OneDrive\Imágenes\Caratulas albums\foto perfil.jpg,true
+=======
+123,abc,Admin,C:\Users\Luis Alfonso\OneDrive\Imágenes\Caratulas albums\loom.jpg,true
+223992973,ajl17xj03k,Poncho17,C:\Users\Luis Alfonso\OneDrive\Imágenes\Caratulas albums\foto perfil.jpg,false
+223992892,tumama,La mera punta del tren,C:\Users\Luis Alfonso\OneDrive\Imágenes\Caratulas albums\Lamine Yamal.jpg,false
+220877073,5,,,false
+171203,abc123,,,false
+220494794,1234,,,false
+123,abc,Admin,C:\Users\Luis Alfonso\OneDrive\Imágenes\Caratulas albums\loom.jpg,true
+456,asd,ADMIN,,true
+224798755,holinea,,,false
+789,zxc,ADMIN,,true
+741,qwe,admin,,true
+258,258,,C:\Users\Luis Alfonso\OneDrive\Imágenes\Caratulas albums\foto perfil.jpg,false
+369,369,ADMIN,C:\Users\Luis Alfonso\OneDrive\Imágenes\Caratulas albums\foto perfil.jpg,true
+>>>>>>> 1654dcc8dba7b5d09d3e6dabbaabff0c335b0855

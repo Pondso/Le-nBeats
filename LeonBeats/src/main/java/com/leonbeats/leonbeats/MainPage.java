@@ -25,6 +25,10 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JMenuItem;
+<<<<<<< HEAD
+=======
+import javax.swing.JOptionPane;
+>>>>>>> 1654dcc8dba7b5d09d3e6dabbaabff0c335b0855
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.ListSelectionModel;
@@ -38,6 +42,15 @@ import javax.swing.event.DocumentListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.filechooser.FileNameExtensionFilter;
+<<<<<<< HEAD
+=======
+import javazoom.jl.player.advanced.AdvancedPlayer;
+import javazoom.jl.player.advanced.PlaybackEvent;
+import javazoom.jl.player.advanced.PlaybackListener;
+import java.io.BufferedInputStream;
+import java.io.FileInputStream;
+import java.io.InputStream;
+>>>>>>> 1654dcc8dba7b5d09d3e6dabbaabff0c335b0855
 import javax.swing.JOptionPane;
 
 /**
@@ -66,8 +79,11 @@ public class MainPage extends javax.swing.JFrame {
     private boolean isLike = false;
     private List<Song> cancionesPendientes = new ArrayList<>();
     private MusicPlayer musicPlayer = new MusicPlayer();
+<<<<<<< HEAD
     private Timer progresoTimer;
     private long tiempoTranscurrido; 
+=======
+>>>>>>> 1654dcc8dba7b5d09d3e6dabbaabff0c335b0855
 
             
     
@@ -121,14 +137,20 @@ public class MainPage extends javax.swing.JFrame {
         playlistSongs.add(newSong);
         currentPlaylistIndex = 0;
     } else {
+<<<<<<< HEAD
         // Insertar justo en el índice actual (antes de la que suena)
         playlistSongs.add(currentPlaylistIndex, newSong);
         // Ya que se insertó antes, la nueva canción está en currentPlaylistIndex
         // y la que estaba antes se mueve a +1, así que no cambiamos el índice
+=======
+        int insertIndex = Math.min(currentPlaylistIndex, playlistSongs.size()); // Aseguramos que esté dentro del rango
+        playlistSongs.add(insertIndex, newSong);
+>>>>>>> 1654dcc8dba7b5d09d3e6dabbaabff0c335b0855
     }
 
     updateSongInfo(newSong);
     updatePlaylistModel();
+<<<<<<< HEAD
 
     // 🔊 Reproducir la canción agregada inmediatamente
     musicPlayer.setPlaylist(playlistSongs);
@@ -138,6 +160,8 @@ public class MainPage extends javax.swing.JFrame {
         if (current != null) {
             iniciarBarraProgreso(current);
         }
+=======
+>>>>>>> 1654dcc8dba7b5d09d3e6dabbaabff0c335b0855
 }
     
     //Función para actualizar la información de la canción que se esta reproduciendo 
@@ -148,9 +172,12 @@ public class MainPage extends javax.swing.JFrame {
     ArtistSong.setText(selectedSong.getArtist());
     AlbumSong.setText(selectedSong.getAlbum());
     DateSong.setText(selectedSong.getYear());
+<<<<<<< HEAD
     NameSong2.setText(selectedSong.getTitle());
     ArtistSong2.setText(selectedSong.getArtist());
     
+=======
+>>>>>>> 1654dcc8dba7b5d09d3e6dabbaabff0c335b0855
 
     ImageIcon art = selectedSong.getAlbumArt();
     if (art != null) {
@@ -341,6 +368,7 @@ private void mostrarPlaylistSeleccionada(PlaylistVisual visual) {
         if (index >= 0 && index < cancionesReal.size()) {
             Song selectedSong = cancionesReal.get(index);
 
+<<<<<<< HEAD
             // Actualizar interfaz
             updateSongInfo(selectedSong);
 
@@ -370,6 +398,36 @@ private void mostrarPlaylistSeleccionada(PlaylistVisual visual) {
 
             PlayBt.setText(EmojiParser.parseToUnicode(":double_vertical_bar:"));
             PlayBt.setFont(new Font("Segoe UI Emoji", Font.PLAIN, 30));
+=======
+            // Actualizar la interfaz con la información de la canción seleccionada
+            NameSong.setText(selectedSong.getTitle());
+            ArtistSong.setText(selectedSong.getArtist());
+            AlbumSong.setText(selectedSong.getAlbum());
+            DateSong.setText(selectedSong.getYear());
+            NameSong2.setText(selectedSong.getTitle());
+            ArtistSong2.setText(selectedSong.getArtist());
+
+            ImageIcon art = selectedSong.getAlbumArt();
+            if (art != null) {
+                SongImg.setIcon(new ImageIcon(
+                    art.getImage().getScaledInstance(60, 60, Image.SCALE_SMOOTH)
+                ));
+                SongImg2.setIcon(new ImageIcon(
+                    art.getImage().getScaledInstance(240, 240, Image.SCALE_SMOOTH)
+                ));
+            } else {
+                SongImg.setIcon(null);
+                SongImg2.setIcon(null);
+            }
+
+            if (!playlistSongs.contains(selectedSong)) {
+                playlistSongs.add(0, selectedSong);
+            }
+            currentPlaylistIndex = 0;
+            updatePlaylistModel();
+
+            actualizarEstadoMeGusta(); // Asegurar que "Me Gusta" se verifica al hacer clic
+>>>>>>> 1654dcc8dba7b5d09d3e6dabbaabff0c335b0855
         }
     }
 });
@@ -645,6 +703,7 @@ private void reiniciarListaAleatoria() {
     System.out.println("🎵 Lista aleatoria generada con " + cancionesPendientes.size() + " canciones.");
 }
 
+<<<<<<< HEAD
 public void playFromMainPage(List<Song> playlistSongs, int currentPlaylistIndex) {
     if (playlistSongs == null || playlistSongs.isEmpty()) {
         System.out.println("⚠ No hay canciones en la cola de reproducción.");
@@ -693,6 +752,50 @@ public void playFromMainPage(List<Song> playlistSongs, int currentPlaylistIndex)
 }
 
 
+=======
+public void play() {
+    if (playlistSongs.isEmpty()) {
+        System.out.println("No hay canciones en la cola de reproducción.");
+        return;
+    }
+
+    if (getState() == PlayerState.PLAYING) return; // Si ya está en reproducción, no hacer nada
+    if (getState() == PlayerState.PAUSED) {
+        state = PlayerState.PLAYING;
+        return;
+    }
+
+    state = PlayerState.PLAYING;
+    stop(); // Detener cualquier reproducción previa
+
+    try {
+        Song currentSong = playlistSongs.get(currentPlaylistIndex);
+        InputStream input = new BufferedInputStream(new FileInputStream(currentSong.getFile()));
+        player = new AdvancedPlayer(input);
+
+        player.setPlayBackListener(new PlaybackListener() {
+            @Override
+            public void playbackFinished(PlaybackEvent evt) {
+                state = PlayerState.STOPPED;
+                playNext(); // Avanzar en la cola de reproducción
+            }
+        });
+
+        new Thread(() -> {
+            try {
+                player.play();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }).start();
+
+        displayCurrentTrackInfo();
+
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+}
+>>>>>>> 1654dcc8dba7b5d09d3e6dabbaabff0c335b0855
 
 
     //Metodo Principal
@@ -861,6 +964,7 @@ SongsList.addListSelectionListener(e -> {
         if (index >= 0 && index < canciones.size()) {
             Song selectedSong = canciones.get(index);
 
+<<<<<<< HEAD
             // Actualizar interfaz
             updateSongInfo(selectedSong);
 
@@ -890,6 +994,37 @@ SongsList.addListSelectionListener(e -> {
 
             PlayBt.setText(EmojiParser.parseToUnicode(":double_vertical_bar:"));
             PlayBt.setFont(new Font("Segoe UI Emoji", Font.PLAIN, 30));
+=======
+            // Actualizar la interfaz con la información de la canción seleccionada
+            NameSong.setText(selectedSong.getTitle());
+            ArtistSong.setText(selectedSong.getArtist());
+            NameSong2.setText(selectedSong.getTitle());
+            ArtistSong2.setText(selectedSong.getArtist());
+            AlbumSong.setText(selectedSong.getAlbum());
+            DateSong.setText(selectedSong.getYear());
+
+            ImageIcon art = selectedSong.getAlbumArt();
+            if (art != null) {
+                SongImg.setIcon(new ImageIcon(
+                        art.getImage().getScaledInstance(60, 60, java.awt.Image.SCALE_SMOOTH)
+                ));
+                SongImg2.setIcon(new ImageIcon(
+                        art.getImage().getScaledInstance(240, 240, Image.SCALE_SMOOTH)
+                ));
+            } else {
+                SongImg.setIcon(null);
+                SongImg2.setIcon(null);
+            }
+
+            int playlistPos = playlistSongs.indexOf(selectedSong);
+            if (playlistPos == -1) {
+                playlistSongs.add(0, selectedSong);
+            }
+            currentPlaylistIndex = 0;
+            updatePlaylistModel();
+
+            actualizarEstadoMeGusta(); // Asegurar que "Me Gusta" se verifica al hacer clic
+>>>>>>> 1654dcc8dba7b5d09d3e6dabbaabff0c335b0855
         }
     }
 });
@@ -1039,8 +1174,11 @@ SongsList.addListSelectionListener(e -> {
         OpenColaR = new javax.swing.JLabel();
         NewPlaylistManager = new javax.swing.JLabel();
         HeartState = new javax.swing.JLabel();
+<<<<<<< HEAD
         ElapsedTime = new javax.swing.JLabel();
         TotalTime = new javax.swing.JLabel();
+=======
+>>>>>>> 1654dcc8dba7b5d09d3e6dabbaabff0c335b0855
         PlaylistsPanel = new javax.swing.JPanel();
         ViewPlaylists = new javax.swing.JPanel();
         ScrollPlaylist = new javax.swing.JScrollPane();
@@ -1700,7 +1838,11 @@ SongsList.addListSelectionListener(e -> {
                 RepeatBtMouseExited(evt);
             }
         });
+<<<<<<< HEAD
         ReproBar.add(RepeatBt, new org.netbeans.lib.awtextra.AbsoluteConstraints(690, 10, 50, 40));
+=======
+        ReproBar.add(RepeatBt, new org.netbeans.lib.awtextra.AbsoluteConstraints(700, 10, 50, 40));
+>>>>>>> 1654dcc8dba7b5d09d3e6dabbaabff0c335b0855
 
         VolumeSlider.setBackground(new java.awt.Color(0, 0, 0));
         VolumeSlider.setValue(100);
@@ -1727,7 +1869,11 @@ SongsList.addListSelectionListener(e -> {
 
         BarRepro.setBackground(new java.awt.Color(0, 0, 0));
         BarRepro.setValue(0);
+<<<<<<< HEAD
         ReproBar.add(BarRepro, new org.netbeans.lib.awtextra.AbsoluteConstraints(300, 50, 470, -1));
+=======
+        ReproBar.add(BarRepro, new org.netbeans.lib.awtextra.AbsoluteConstraints(260, 50, 570, -1));
+>>>>>>> 1654dcc8dba7b5d09d3e6dabbaabff0c335b0855
 
         OpenColaR.setText("jLabel3");
         OpenColaR.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -1765,9 +1911,13 @@ SongsList.addListSelectionListener(e -> {
                 HeartStateMouseClicked(evt);
             }
         });
+<<<<<<< HEAD
         ReproBar.add(HeartState, new org.netbeans.lib.awtextra.AbsoluteConstraints(300, 10, -1, -1));
         ReproBar.add(ElapsedTime, new org.netbeans.lib.awtextra.AbsoluteConstraints(250, 50, 50, 20));
         ReproBar.add(TotalTime, new org.netbeans.lib.awtextra.AbsoluteConstraints(780, 50, 60, 20));
+=======
+        ReproBar.add(HeartState, new org.netbeans.lib.awtextra.AbsoluteConstraints(290, 0, -1, -1));
+>>>>>>> 1654dcc8dba7b5d09d3e6dabbaabff0c335b0855
 
         HomePanel.add(ReproBar, new org.netbeans.lib.awtextra.AbsoluteConstraints(-10, 630, 1080, 90));
 
@@ -2632,6 +2782,7 @@ SongsList.addListSelectionListener(e -> {
 
     private void PlayBtMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_PlayBtMouseClicked
     if (musicPlayer.isPlaying()) {
+<<<<<<< HEAD
         musicPlayer.pause();
         PlayBt.setText(EmojiParser.parseToUnicode(":arrow_forward:")); // ▶️
     } else if (musicPlayer.isPaused()) {
@@ -2653,6 +2804,15 @@ SongsList.addListSelectionListener(e -> {
                     iniciarBarraProgreso(current);
                    }
             PlayBt.setText(EmojiParser.parseToUnicode(":double_vertical_bar:")); // ⏸️
+=======
+        musicPlayer.pause(); // Pausar la reproducción
+        PlayBt.setText(EmojiParser.parseToUnicode(":arrow_forward:")); // ▶️ Play
+    } else {
+        if (!playlistSongs.isEmpty()) {
+            musicPlayer.setCurrentTrackIndex(currentPlaylistIndex); // Asegurar que comienza desde la canción actual
+            musicPlayer.play(); // Iniciar reproducción
+            PlayBt.setText(EmojiParser.parseToUnicode(":double_vertical_bar:")); // ⏸️ Pause
+>>>>>>> 1654dcc8dba7b5d09d3e6dabbaabff0c335b0855
         } else {
             JOptionPane.showMessageDialog(this, "⚠ No hay canciones en la cola de reproducción.", "Error", JOptionPane.WARNING_MESSAGE);
         }
@@ -2673,6 +2833,7 @@ SongsList.addListSelectionListener(e -> {
     if (playlistSongs.isEmpty()) return;
 
     if (isRandom) {
+<<<<<<< HEAD
         if (!cancionesPendientes.isEmpty()) {
             int randomIndex = new Random().nextInt(cancionesPendientes.size());
             Song selectedSong = cancionesPendientes.remove(randomIndex);
@@ -2711,6 +2872,31 @@ SongsList.addListSelectionListener(e -> {
     PlayBt.setFont(new Font("Segoe UI Emoji", Font.PLAIN, 30));
 
     actualizarEstadoMeGusta();
+=======
+        // Modo aleatorio: Seleccionar una canción al azar de las disponibles
+        if (!cancionesPendientes.isEmpty()) {
+            int randomIndex = new Random().nextInt(cancionesPendientes.size()); // Obtener índice aleatorio
+            Song selectedSong = cancionesPendientes.remove(randomIndex); // Obtener y eliminar la canción
+
+            updateSongInfo(selectedSong);
+        } else {
+            System.out.println("⚠ Todas las canciones aleatorias se han reproducido. Reiniciando lista...");
+            reiniciarListaAleatoria();
+            NextBtMouseClicked(evt); // Repetir para reproducir la primera canción en la nueva lista
+        }
+    } else {
+        // Modo normal
+        if (currentPlaylistIndex < playlistSongs.size() - 1) {
+            currentPlaylistIndex++;
+            updateSongInfo(playlistSongs.get(currentPlaylistIndex));
+        } else {
+            System.out.println("Final de la lista alcanzado.");
+            return;
+        }
+    }
+
+    actualizarEstadoMeGusta(); // Verificar si la nueva canción tiene "Me Gusta"
+>>>>>>> 1654dcc8dba7b5d09d3e6dabbaabff0c335b0855
     updatePlaylistModel();
     }//GEN-LAST:event_NextBtMouseClicked
 
@@ -2747,6 +2933,7 @@ SongsList.addListSelectionListener(e -> {
     if (playlistSongs.isEmpty()) return;
 
     if (isRandom) {
+<<<<<<< HEAD
         if (!cancionesPendientes.isEmpty()) {
             Song selectedSong = cancionesPendientes.remove(cancionesPendientes.size() - 1);
             currentPlaylistIndex = playlistSongs.indexOf(selectedSong);
@@ -2764,10 +2951,36 @@ SongsList.addListSelectionListener(e -> {
             currentPlaylistIndex--;
         } else {
             System.out.println("⚠ Inicio de la lista.");
+=======
+        // Modo aleatorio: Regresar a la última canción reproducida antes de la actual
+        if (!cancionesPendientes.isEmpty()) {
+            Song selectedSong = cancionesPendientes.remove(cancionesPendientes.size() - 1); // Obtener y eliminar la última canción reproducida
+            updateSongInfo(selectedSong);
+        } else {
+            System.out.println("⚠ No hay canciones previas en aleatorio.");
+            return;
+        }
+    } else if (repeatState == 2) {
+        updateSongInfo(playlistSongs.get(currentPlaylistIndex));
+    } else if (repeatState == 1) {
+        currentPlaylistIndex = (currentPlaylistIndex - 1 + playlistSongs.size()) % playlistSongs.size();
+        updateSongInfo(playlistSongs.get(currentPlaylistIndex));
+    } else {
+        if (currentPlaylistIndex > 0) {
+            currentPlaylistIndex--;
+            updateSongInfo(playlistSongs.get(currentPlaylistIndex));
+        } else {
+            System.out.println("⚠ Inicio de la lista alcanzado.");
+            if (!playlistSongs.isEmpty()) {
+                currentPlaylistIndex = 0;
+                updateSongInfo(playlistSongs.get(currentPlaylistIndex));
+            }
+>>>>>>> 1654dcc8dba7b5d09d3e6dabbaabff0c335b0855
             return;
         }
     }
 
+<<<<<<< HEAD
     Song currentSong = playlistSongs.get(currentPlaylistIndex);
     updateSongInfo(currentSong);
     musicPlayer.setPlaylist(playlistSongs);
@@ -2781,6 +2994,9 @@ SongsList.addListSelectionListener(e -> {
     PlayBt.setFont(new Font("Segoe UI Emoji", Font.PLAIN, 30));
 
     actualizarEstadoMeGusta();
+=======
+    actualizarEstadoMeGusta(); // Verificar si la nueva canción tiene "Me Gusta"
+>>>>>>> 1654dcc8dba7b5d09d3e6dabbaabff0c335b0855
     updatePlaylistModel();
     }//GEN-LAST:event_BackBtMouseClicked
 
@@ -3421,7 +3637,10 @@ SongsList.addListSelectionListener(e -> {
     private javax.swing.JLabel CreatorPlaylist;
     private javax.swing.JLabel DateSong;
     private javax.swing.JPanel EditUser;
+<<<<<<< HEAD
     private javax.swing.JLabel ElapsedTime;
+=======
+>>>>>>> 1654dcc8dba7b5d09d3e6dabbaabff0c335b0855
     private javax.swing.JButton EnterSButon;
     private javax.swing.JLabel ErrorLabel;
     private javax.swing.JLabel FriendsImg;
@@ -3486,7 +3705,10 @@ SongsList.addListSelectionListener(e -> {
     private javax.swing.JPanel TaskBar1;
     private javax.swing.JPanel TaskBar2;
     private javax.swing.JLabel TittlePlaylist;
+<<<<<<< HEAD
     private javax.swing.JLabel TotalTime;
+=======
+>>>>>>> 1654dcc8dba7b5d09d3e6dabbaabff0c335b0855
     private javax.swing.JLabel UserCreator;
     private javax.swing.JLabel UserImg;
     private javax.swing.JLabel Usuarios;
