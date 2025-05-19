@@ -135,20 +135,14 @@ public class MainPage extends javax.swing.JFrame {
     updatePlaylistModel();
 
     // 🔊 Reproducir la canción agregada inmediatamente
-musicPlayer.setPlaylist(playlistSongs);
-musicPlayer.setCurrentTrackIndex(currentPlaylistIndex);
-
-// Verifica si el reproductor estaba en pausa
-if (musicPlayer.getState() == MusicPlayer.PlayerState.PAUSED) {
-    musicPlayer.resume(); // ✅ Reanuda desde donde se pausó
-} else {
-    musicPlayer.play(); // 🔁 Reproduce normalmente si no estaba pausado
+    musicPlayer.setPlaylist(playlistSongs);
+    musicPlayer.setCurrentTrackIndex(currentPlaylistIndex);
+    musicPlayer.play();
     Song current = musicPlayer.getCurrentSong();
-    if (current != null) {
-        iniciarBarraProgreso(current); // ⏳ Solo reinicia barra si es una nueva reproducción
-    }
+        if (current != null) {
+            iniciarBarraProgreso(current);
+        }
 }
-    }
     
     //Función para actualizar la información de la canción que se esta reproduciendo 
     private void updateSongInfo(Song selectedSong) {
@@ -365,20 +359,14 @@ private void mostrarPlaylistSeleccionada(PlaylistVisual visual) {
                 playlistSongs.add(currentPlaylistIndex, selectedSong);
             }
 
-            // Reproducir la canción seleccionada
-            musicPlayer.setPlaylist(playlistSongs);
-            musicPlayer.setCurrentTrackIndex(currentPlaylistIndex);
-            // Verifica si el reproductor estaba en pausa
-// Verifica si el reproductor estaba en pausa
-if (musicPlayer.getState() == MusicPlayer.PlayerState.PAUSED) {
-    musicPlayer.resume(); // ✅ Reanuda desde donde se pausó
-} else {
-    musicPlayer.play(); // 🔁 Reproduce normalmente si no estaba pausado
+    // 🔊 Reproducir la canción agregada inmediatamente
+    musicPlayer.setPlaylist(playlistSongs);
+    musicPlayer.setCurrentTrackIndex(currentPlaylistIndex);
+    musicPlayer.play();
     Song current = musicPlayer.getCurrentSong();
-    if (current != null) {
-        iniciarBarraProgreso(current); // ⏳ Solo reinicia barra si es una nueva reproducción
-    }
-}
+        if (current != null) {
+            iniciarBarraProgreso(current);
+        }
 
             // Actualizar visualización y estado
             actualizarEstadoMeGusta();
@@ -667,18 +655,14 @@ public void playFromMainPage(List<Song> playlistSongs, int currentPlaylistIndex)
         return;
     }
 
-    musicPlayer.setPlaylist(playlistSongs); // <-- ESTE ES CLAVE
+    // 🔊 Reproducir la canción agregada inmediatamente
+    musicPlayer.setPlaylist(playlistSongs);
     musicPlayer.setCurrentTrackIndex(currentPlaylistIndex);
-// Verifica si el reproductor estaba en pausa
-if (musicPlayer.getState() == MusicPlayer.PlayerState.PAUSED) {
-    musicPlayer.resume(); // ✅ Reanuda desde donde se pausó
-} else {
-    musicPlayer.play(); // 🔁 Reproduce normalmente si no estaba pausado
+    musicPlayer.play();
     Song current = musicPlayer.getCurrentSong();
-    if (current != null) {
-        iniciarBarraProgreso(current); // ⏳ Solo reinicia barra si es una nueva reproducción
-    }
-}
+        if (current != null) {
+            iniciarBarraProgreso(current);
+        }
 }
 
 
@@ -900,19 +884,14 @@ SongsList.addListSelectionListener(e -> {
                 playlistSongs.add(currentPlaylistIndex, selectedSong);
             }
 
-            // Reproducir la canción seleccionada
-            musicPlayer.setPlaylist(playlistSongs);
-            musicPlayer.setCurrentTrackIndex(currentPlaylistIndex);
-// Verifica si el reproductor estaba en pausa
-if (musicPlayer.getState() == MusicPlayer.PlayerState.PAUSED) {
-    musicPlayer.resume(); // ✅ Reanuda desde donde se pausó
-} else {
-    musicPlayer.play(); // 🔁 Reproduce normalmente si no estaba pausado
+    // 🔊 Reproducir la canción agregada inmediatamente
+    musicPlayer.setPlaylist(playlistSongs);
+    musicPlayer.setCurrentTrackIndex(currentPlaylistIndex);
+    musicPlayer.play();
     Song current = musicPlayer.getCurrentSong();
-    if (current != null) {
-        iniciarBarraProgreso(current); // ⏳ Solo reinicia barra si es una nueva reproducción
-    }
-}
+        if (current != null) {
+            iniciarBarraProgreso(current);
+        }
 
             // Actualizar visualización y estado
             actualizarEstadoMeGusta();
@@ -2667,32 +2646,22 @@ if (musicPlayer.getState() == MusicPlayer.PlayerState.PAUSED) {
         PlayBt.setText(EmojiParser.parseToUnicode(":arrow_forward:")); // ▶️
     } else if (musicPlayer.isPaused()) {
         // Reanudar desde PAUSED
-// Verifica si el reproductor estaba en pausa
-if (musicPlayer.getState() == MusicPlayer.PlayerState.PAUSED) {
-    musicPlayer.resume(); // ✅ Reanuda desde donde se pausó
-} else {
-    musicPlayer.play(); // 🔁 Reproduce normalmente si no estaba pausado
-    Song current = musicPlayer.getCurrentSong();
-    if (current != null) {
-        iniciarBarraProgreso(current); // ⏳ Solo reinicia barra si es una nueva reproducción
-    }
-}
+        musicPlayer.play(); 
+        Song current = musicPlayer.getCurrentSong();
+        if (current != null) {
+            iniciarBarraProgreso(current);
+        }
         PlayBt.setText(EmojiParser.parseToUnicode(":double_vertical_bar:")); // ⏸️
     } else {
         // Reproducción nueva
         if (!playlistSongs.isEmpty() && currentPlaylistIndex >= 0 && currentPlaylistIndex < playlistSongs.size()) {
             musicPlayer.setPlaylist(playlistSongs); // Aseguramos que tenga la lista actual
             musicPlayer.setCurrentTrackIndex(currentPlaylistIndex);
-            // Verifica si el reproductor estaba en pausa
-if (musicPlayer.getState() == MusicPlayer.PlayerState.PAUSED) {
-    musicPlayer.play(); // Reanuda desde donde se pausó (ya lo implementaste en la clase)
-} else {
-    musicPlayer.play(); // Reproduce normalmente si no estaba pausado
-    Song current = musicPlayer.getCurrentSong();
-    if (current != null) {
-        iniciarBarraProgreso(current); // Solo reinicia barra si es una nueva reproducción
-    }
-}
+            musicPlayer.play();
+            Song current = musicPlayer.getCurrentSong();
+                if (current != null) {
+                    iniciarBarraProgreso(current);
+                   }
             PlayBt.setText(EmojiParser.parseToUnicode(":double_vertical_bar:")); // ⏸️
         } else {
             JOptionPane.showMessageDialog(this, "⚠ No hay canciones en la cola de reproducción.", "Error", JOptionPane.WARNING_MESSAGE);
@@ -2713,49 +2682,36 @@ if (musicPlayer.getState() == MusicPlayer.PlayerState.PAUSED) {
     private void NextBtMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_NextBtMouseClicked
     if (playlistSongs.isEmpty()) return;
 
+    // Si aleatorio
     if (isRandom) {
         if (!cancionesPendientes.isEmpty()) {
-            int randomIndex = new Random().nextInt(cancionesPendientes.size());
-            Song selectedSong = cancionesPendientes.remove(randomIndex);
+            Song selectedSong = cancionesPendientes.remove(cancionesPendientes.size() - 1);
             currentPlaylistIndex = playlistSongs.indexOf(selectedSong);
         } else {
-            reiniciarListaAleatoria(); // Vuelve a llenar cancionesPendientes
-            return;
+            currentPlaylistIndex = (currentPlaylistIndex + 1) % playlistSongs.size();
         }
     } else {
         if (repeatState == 2) {
-            // Repeat One: se queda en la misma canción
-        } else if (repeatState == 1) {
-            // Repeat All: avanzar y dar la vuelta si se pasa del final
-            currentPlaylistIndex = (currentPlaylistIndex + 1) % playlistSongs.size();
+            // Repeat One: no se cambia de canción
         } else {
-            // Normal
-            if (currentPlaylistIndex < playlistSongs.size() - 1) {
-                currentPlaylistIndex++;
-            } else {
-                System.out.println("⚠ Fin de la lista.");
-                return;
-            }
+            currentPlaylistIndex = (currentPlaylistIndex + 1) % playlistSongs.size();
         }
     }
 
     Song currentSong = playlistSongs.get(currentPlaylistIndex);
     updateSongInfo(currentSong);
+
     musicPlayer.setPlaylist(playlistSongs);
     musicPlayer.setCurrentTrackIndex(currentPlaylistIndex);
-// Verifica si el reproductor estaba en pausa
-if (musicPlayer.getState() == MusicPlayer.PlayerState.PAUSED) {
-    musicPlayer.resume(); // ✅ Reanuda desde donde se pausó
-} else {
-    musicPlayer.play(); // 🔁 Reproduce normalmente si no estaba pausado
+    musicPlayer.play(); // fuerza reproducción
+
     Song current = musicPlayer.getCurrentSong();
     if (current != null) {
-        iniciarBarraProgreso(current); // ⏳ Solo reinicia barra si es una nueva reproducción
+        iniciarBarraProgreso(current);
     }
-}
+
     PlayBt.setText(EmojiParser.parseToUnicode(":double_vertical_bar:")); // ⏸️
     PlayBt.setFont(new Font("Segoe UI Emoji", Font.PLAIN, 30));
-
     actualizarEstadoMeGusta();
     updatePlaylistModel();
     }//GEN-LAST:event_NextBtMouseClicked
@@ -2797,40 +2753,30 @@ if (musicPlayer.getState() == MusicPlayer.PlayerState.PAUSED) {
             Song selectedSong = cancionesPendientes.remove(cancionesPendientes.size() - 1);
             currentPlaylistIndex = playlistSongs.indexOf(selectedSong);
         } else {
-            System.out.println("⚠ No hay canciones previas aleatorias.");
-            return;
+            currentPlaylistIndex = (currentPlaylistIndex - 1 + playlistSongs.size()) % playlistSongs.size();
         }
-    } else if (repeatState == 2) {
-        // Repeat One: quedarse en la misma canción
-    } else if (repeatState == 1) {
-        // Repeat All: retroceder circularmente
-        currentPlaylistIndex = (currentPlaylistIndex - 1 + playlistSongs.size()) % playlistSongs.size();
     } else {
-        if (currentPlaylistIndex > 0) {
-            currentPlaylistIndex--;
+        if (repeatState == 2) {
+            // Repeat One: quedarse en misma canción
         } else {
-            System.out.println("⚠ Inicio de la lista.");
-            return;
+            currentPlaylistIndex = (currentPlaylistIndex - 1 + playlistSongs.size()) % playlistSongs.size();
         }
     }
 
     Song currentSong = playlistSongs.get(currentPlaylistIndex);
     updateSongInfo(currentSong);
+
     musicPlayer.setPlaylist(playlistSongs);
     musicPlayer.setCurrentTrackIndex(currentPlaylistIndex);
-// Verifica si el reproductor estaba en pausa
-if (musicPlayer.getState() == MusicPlayer.PlayerState.PAUSED) {
-    musicPlayer.resume(); // ✅ Reanuda desde donde se pausó
-} else {
-    musicPlayer.play(); // 🔁 Reproduce normalmente si no estaba pausado
+    musicPlayer.play(); // fuerza reproducción
+
     Song current = musicPlayer.getCurrentSong();
     if (current != null) {
-        iniciarBarraProgreso(current); // ⏳ Solo reinicia barra si es una nueva reproducción
+        iniciarBarraProgreso(current);
     }
-}
+
     PlayBt.setText(EmojiParser.parseToUnicode(":double_vertical_bar:")); // ⏸️
     PlayBt.setFont(new Font("Segoe UI Emoji", Font.PLAIN, 30));
-
     actualizarEstadoMeGusta();
     updatePlaylistModel();
     }//GEN-LAST:event_BackBtMouseClicked

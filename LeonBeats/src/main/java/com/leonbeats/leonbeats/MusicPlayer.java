@@ -8,6 +8,8 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.Timer;
+import javazoom.jl.player.advanced.PlaybackEvent;
+import javazoom.jl.player.advanced.PlaybackListener;
 
 public class MusicPlayer {
     private AdvancedPlayer player;
@@ -48,78 +50,64 @@ public class MusicPlayer {
     }
 
     public void play() {
-        if (playlist.isEmpty()) {
-            System.out.println("No hay canciones en la playlist.");
-            return;
-        }
+    if (playlist.isEmpty()) {
+        System.out.println("No hay canciones en la playlist.");
+        return;
+    }
 
-        if (state == PlayerState.PAUSED && pausedFrame > 0) {
-            resume();
-            return;
-        }
+    // Si estaba pausado, reanudar
+    if (state == PlayerState.PAUSED && pausedFrame > 0) {
+        resume();
+        return;
+    }
 
-        stop(); // detener cualquier reproducción previa
-        state = PlayerState.PLAYING;
+    stop();
 
-        try {
-            Song currentSong = playlist.get(currentTrackIndex);
-            InputStream input = new BufferedInputStream(new FileInputStream(currentSong.getFile()));
-            player = new AdvancedPlayer(input);
+    state = PlayerState.PLAYING;
 
-            totalFrames = (int) ((currentSong.getDuration() / 1000.0) * framesPerSecond);
-            pausedFrame = 0;
-            tiempoTranscurrido = 0;
+    try {
+        Song currentSong = playlist.get(currentTrackIndex);
+        InputStream input = new BufferedInputStream(new FileInputStream(currentSong.getFile()));
+        player = new AdvancedPlayer(input);
 
-            new Thread(() -> {
-                try {
-                    isPlaying = true;
-                    player.play();
-                    isPlaying = false;
-                    state = PlayerState.STOPPED;
-                    if (progresoTimer != null) {
-                        progresoTimer.stop();
-                    }
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }).start();
+        // Estimamos totalFrames basado en duración (segundos * fps)
+        totalFrames = (int)(currentSong.getDuration() / 1000 * framesPerSecond);
 
-            progresoTimer = new Timer(1000, e -> tiempoTranscurrido += 1000);
-            progresoTimer.start();
+        pausedFrame = 0;
 
-            displayCurrentTrackInfo();
+        new Thread(() -> {
+            try {
+                isPlaying = true;
+                player.play();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }).start();
 
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        displayCurrentTrackInfo();
+
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
     }
 
     public void resume() {
     try {
         Song currentSong = playlist.get(currentTrackIndex);
-
-        System.out.println("▶ Reanudando desde frame: " + pausedFrame); // ✅ Aquí
-
-        player = crearPlayerDesdeFrame(currentSong.getFile(), pausedFrame);
+        InputStream input = new BufferedInputStream(new FileInputStream(currentSong.getFile()));
+        player = new AdvancedPlayer(input);
 
         state = PlayerState.PLAYING;
 
         new Thread(() -> {
             try {
                 isPlaying = true;
-                player.play();
-                isPlaying = false;
-                state = PlayerState.STOPPED;
-                if (progresoTimer != null) {
-                    progresoTimer.stop();
-                }
+                player.play(pausedFrame, totalFrames);
+                pausedFrame = 0;
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }).start();
-
-        progresoTimer = new Timer(1000, e -> tiempoTranscurrido += 1000);
-        progresoTimer.start();
 
         displayCurrentTrackInfo();
 
@@ -148,21 +136,14 @@ public class MusicPlayer {
 
     public void pause() {
         if (state == PlayerState.PLAYING) {
-            state = PlayerState.PAUSED;
-
-            if (progresoTimer != null) {
-                progresoTimer.stop();
-            }
-
-            pausedFrame = calcularFrameActual();
-            System.out.println("Canción pausada en frame: " + pausedFrame);
-
-            if (player != null) {
-                player.close();
-            }
-
+        state = PlayerState.PAUSED;
+        if (player != null) {
+            // Antes de cerrar guardamos la posición actual según tu contador de frames:
+            pausedFrame = calcularFrameActual();  // Te lo explico abajo
+            player.close();
             isPlaying = false;
         }
+    }
     }
 
     public void stop() {
