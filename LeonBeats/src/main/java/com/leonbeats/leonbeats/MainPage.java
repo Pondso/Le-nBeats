@@ -986,6 +986,41 @@ SongsList.addListSelectionListener(e -> {
     }
     });
     
+    musicPlayer.setNextTrackCallback(() -> {
+    SwingUtilities.invokeLater(() -> {
+        if (playlistSongs.isEmpty()) return;
+
+        if (repeatState == 2) {
+            // Repetir una sola canción
+            musicPlayer.play();
+            iniciarBarraProgreso(playlistSongs.get(currentPlaylistIndex));
+            return;
+        }
+
+        if (isRandom) {
+            if (!cancionesPendientes.isEmpty()) {
+                Song selected = cancionesPendientes.remove(cancionesPendientes.size() - 1);
+                currentPlaylistIndex = playlistSongs.indexOf(selected);
+            } else {
+                currentPlaylistIndex = (int)(Math.random() * playlistSongs.size());
+            }
+        } else {
+            currentPlaylistIndex = (currentPlaylistIndex + 1) % playlistSongs.size();
+        }
+
+        Song currentSong = playlistSongs.get(currentPlaylistIndex);
+        updateSongInfo(currentSong);
+        musicPlayer.setPlaylist(playlistSongs);
+        musicPlayer.setCurrentTrackIndex(currentPlaylistIndex);
+        musicPlayer.play();
+        iniciarBarraProgreso(currentSong);
+        PlayBt.setText(EmojiParser.parseToUnicode(":double_vertical_bar:"));
+        PlayBt.setFont(new Font("Segoe UI Emoji", Font.PLAIN, 30));
+        actualizarEstadoMeGusta();
+        updatePlaylistModel();
+    });
+});
+    
   
     }
 
@@ -3331,10 +3366,10 @@ SongsList.addListSelectionListener(e -> {
 
     // Agregar todas las canciones de la playlist al inicio de `playlistSongs`
     for (int i = cancionesReal.size() - 1; i >= 0; i--) { // Recorrer desde la última para mantener el orden
-        addSongToQueue(cancionesReal.get(i));
+        addSongToQueueAtEnd(cancionesReal.get(i));
     }
 
-    System.out.println("🎵 Se agregaron " + cancionesReal.size() + " canciones al inicio de la cola.");
+    System.out.println("🎵 Se agregaron " + cancionesReal.size() + " canciones al final de la cola.");
     updatePlaylistModel(); // Refrescar la UI
     }//GEN-LAST:event_AddtoQueePlaylistMouseClicked
 

@@ -22,6 +22,7 @@ public class MusicPlayer {
     private final int framesPerSecond = 38;
     private Timer progresoTimer;
     private int tiempoTranscurrido = 0;
+    private Runnable nextTrackCallback;
 
     public enum PlayerState {
         PLAYING, PAUSED, STOPPED
@@ -72,8 +73,18 @@ public class MusicPlayer {
 
         // Estimamos totalFrames basado en duración (segundos * fps)
         totalFrames = (int)(currentSong.getDuration() / 1000 * framesPerSecond);
-
         pausedFrame = 0;
+
+        // ⚠️ Aquí agregamos el callback al terminar la canción
+        player.setPlayBackListener(new PlaybackListener() {
+            @Override
+            public void playbackFinished(PlaybackEvent evt) {
+                isPlaying = false;
+                if (state != PlayerState.PAUSED && nextTrackCallback != null) {
+                    nextTrackCallback.run();  // Pasa a la siguiente canción
+                }
+            }
+        });
 
         new Thread(() -> {
             try {
@@ -89,7 +100,7 @@ public class MusicPlayer {
     } catch (Exception e) {
         e.printStackTrace();
     }
-    }
+}
 
     public void resume() {
     try {
@@ -249,5 +260,9 @@ public class MusicPlayer {
             return (long) ((pausedFrame / (double) totalFrames) * current.getDuration());
         }
         return 0;
+    }
+    
+    public void setNextTrackCallback(Runnable callback) {
+        this.nextTrackCallback = callback;
     }
 }
