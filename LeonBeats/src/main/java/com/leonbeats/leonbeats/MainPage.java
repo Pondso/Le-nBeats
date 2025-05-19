@@ -832,10 +832,13 @@ private void iniciarBarraProgreso(Song song, long tiempoInicial) {
         VolumeSlider.setValue(50);
         
         VolumeSlider.addChangeListener(new ChangeListener() {
-        public void stateChanged(ChangeEvent e) {
+    public void stateChanged(ChangeEvent e) {
         int value = VolumeSlider.getValue();
-        String emoji;
 
+        // Ajusta el volumen del sistema con SoundVolumeView
+        VolumeControl.setSystemVolume(value);
+
+        String emoji;
         if (value == 0) {
             emoji = EmojiParser.parseToUnicode(":mute:"); // 🔇
             isMuted = true;
